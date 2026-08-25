@@ -15,7 +15,7 @@ terraform apply
 
 ![img1](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img1.png)
 
-![img1](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img1.png)
+![img2](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img2.png)
 
 
 Применяем плейбуки:
