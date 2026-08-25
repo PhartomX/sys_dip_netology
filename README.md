@@ -28,3 +28,4 @@ ansible-playbook -i host.ini site.yml
 
 В частности работу баллансировщика можно проверить обновляя сайт работает по ссылке: http://158.160.151.128/
 
+Файлы для terraform и ansible лежат в директори:  [terraform](https://github.com/PhartomX/sys_dip_netology/tree/main/terraform)
