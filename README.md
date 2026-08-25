@@ -11,7 +11,7 @@ terraform init
 terraform apply
 ```
 
-Видим в Yandex Cloude развёрнутую инфраструктуру:
+Видим в Yandex Cloud развёрнутую инфраструктуру:
 
 ![img1](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img1.png)
 
