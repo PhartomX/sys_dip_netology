@@ -1,0 +1,140 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+    - name: Create index.html with hostname
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html lang="ru">
+          <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Дипломная работа по профессии «Системный администратор»</title>
+              <style>
+                  * { box-sizing: border-box; margin: 0; padding: 0; }
+                  body { 
+                      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                      min-height: 100vh;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                      padding: 20px;
+                  }
+                  .container { 
+                      background: rgba(255, 255, 255, 0.70); 
+                      padding: 40px;
+                      border: 6px solid rgba(255, 255, 255, 0.45); 
+                      border-radius: 16px; 
+                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+                      max-width: 600px;
+                      width: 100%;
+                      text-align: center;
+                      backdrop-filter: blur(10px);
+                      transition: transform 0.3s ease;
+                  }
+                  .container:hover {
+                      transform: translateY(-5px);
+                  }
+                  h1 { 
+                      color: #2d3748; 
+                      font-size: 24px;
+                      margin-bottom: 15px;
+                  }
+                  h2 { 
+                      color: #4a5568; 
+                      font-size: 18px;
+                      font-weight: 500;
+                      margin-bottom: 25px;
+                      line-height: 1.5;
+                  }
+                  .emoji {
+                      font-size: 40px;
+                      margin-bottom: 15px;
+                      display: block;
+                  }
+                  hr {
+                      border: 0;
+                      height: 1px;
+                      background: #e2e8f0;
+                      margin: 20px 0;
+                  }
+                  .badge {
+                      display: inline-block;
+                      background-color: #e2e8f0;
+                      color: #4a5568;
+                      padding: 6px 12px;
+                      border-radius: 20px;
+                      font-size: 14px;
+                      font-weight: 600;
+                      font-family: monospace;
+                  }
+                  .info-text {
+                      color: #718096;
+                      font-size: 14px;
+                      margin-top: 15px;
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <span class="emoji">👋</span>
+                  <h1>Приветствую Вас на тестовом стенде!</h1>
+                  <h2>Уважаемый проверяющий, желаю вам отличного дня и хорошего настроения!<span class="emoji">😊</span></h2>
+                  <hr>
+                  <p style="color: #4a5568; margin-bottom: 8px;">Запрос обработан сервером:</p>
+                  <div class="badge">{{ inventory_hostname }}</div>
+                  <p class="info-text">Инфраструктура развернута отказоустойчиво в Yandex Cloud через Application Load Balancer.</p>
+              </div>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+    
+    - name: Remove broken filebeat file if exists
+      file:
+        path: /tmp/filebeat.deb
+        state: absent
+
+    - name: Install dependencies for APT repositories
+      apt:
+        name:
+          - apt-transport-https
+        state: present
+
+    - name: Add Elastic 7.x Repository from Yandex Mirror
+      apt_repository:
+        repo: "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main"
+        state: present
+        filename: elastic-7.x
+
+    - name: Install Filebeat via apt from Yandex Mirror
+      apt:
+        name: filebeat
+        state: present
+        update_cache: yes
+
+    - name: Configure Filebeat inputs and output
+      copy:
+        content: |
+          filebeat.inputs:
+          - type: log
+            enabled: true
+            paths:
+              - /var/log/nginx/access.log
+              - /var/log/nginx/error.log
+          output.elasticsearch:
+            hosts: ["elasticsearch.ru-central1.internal:9200"]
+        dest: /etc/filebeat/filebeat.yml
+
+    - name: Start and enable Filebeat service
+      systemd:
+        name: filebeat
+        state: restarted
+        enabled: yes
+
+

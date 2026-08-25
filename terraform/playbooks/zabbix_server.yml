@@ -1,0 +1,42 @@
+---
+- hosts: monitoring
+  become: yes
+  tasks:
+    - name: Install MariaDB Server (Backend for Zabbix)
+      apt:
+        name: 
+          - mariadb-server
+          - python3-mysqldb
+        state: present
+
+    - name: Install Zabbix Server components from Ubuntu repositories
+      apt:
+        name:
+          - zabbix-server-mysql
+          - zabbix-frontend-php
+          - nginx
+          - php-fpm
+        state: present
+
+    - name: Ensure Zabbix services and Nginx are started
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop: [mariadb, nginx, zabbix-server]
+    - name: Change Nginx default port from 80 to 8080 for Zabbix Web
+      lineinfile:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen 80 default_server;'
+        line: 'listen 8080 default_server;'
+
+    - name: Change Nginx default IPv6 port from 80 to 8080 for Zabbix Web
+      lineinfile:
+        path: /etc/nginx/sites-available/default
+        regexp: 'listen \[::\]:80 default_server;'
+        line: 'listen [::]:8080 default_server;'
+
+    - name: Restart Nginx to apply port 8080
+      systemd:
+        name: nginx
+        state: restarted

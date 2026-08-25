@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Zabbix Agent from official Ubuntu repositories
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: Configure Zabbix Agent (Server IP)
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^Server='
+        line: 'Server=zabbix.ru-central1.internal'
+
+    - name: Configure Zabbix Agent (Active Server)
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^ServerActive='
+        line: 'ServerActive=zabbix.ru-central1.internal'
+
+    - name: Configure Zabbix Agent (Hostname)
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^Hostname='
+        line: "Hostname={{ inventory_hostname }}"
+
+    - name: Restart and enable Zabbix Agent
+      systemd:
+        name: zabbix-agent
+        state: restarted
+        enabled: yes

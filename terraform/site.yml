@@ -1,0 +1,6 @@
+---
+- import_playbook: playbooks/base.yml
+- import_playbook: playbooks/web.yml
+- import_playbook: playbooks/zabbix_server.yml
+- import_playbook: playbooks/elasticsearch.yml
+- import_playbook: playbooks/kibana.yml

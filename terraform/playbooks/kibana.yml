@@ -1,0 +1,34 @@
+---
+- hosts: logging_kibana
+  become: yes
+  tasks:
+    - name: Clean up temporary files
+      file:
+        path: /tmp/kibana.deb
+        state: absent
+
+    - name: Add Elastic 7.x Repository from Yandex Mirror
+      apt_repository:
+        repo: "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main"
+        state: present
+        filename: elastic-7.x
+
+    - name: Install Kibana via apt from Yandex mirror
+      apt:
+        name: kibana
+        state: present
+        update_cache: yes
+
+    - name: Configure Kibana configuration file
+      copy:
+        content: |
+          server.host: "0.0.0.0"
+          server.port: 5601
+          elasticsearch.hosts: ["http://ru-central1.internal"]
+        dest: /etc/kibana/kibana.yml
+
+    - name: Start and enable Kibana service
+      systemd:
+        name: kibana
+        state: restarted
+        enabled: yes
