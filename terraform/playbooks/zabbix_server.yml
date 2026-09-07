@@ -16,26 +16,47 @@
           - zabbix-frontend-php
           - nginx
           - php-fpm
+          - php-mysql
         state: present
 
-    - name: Ensure Zabbix services and Nginx are started
+    - name: Configure Nginx virtual host for Zabbix
+      copy:
+        content: |
+          server {
+              listen 8080 default_server;
+              listen [::]:8080 default_server;
+
+              root /usr/share/zabbix;
+              index index.php index.html index.htm;
+
+              server_name _;
+
+              location / {
+                  try_files $uri $uri/ =404;
+              }
+
+              location ~ \.php$ {
+                  include snippets/fastcgi-php.conf;
+                  fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+                  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                  include fastcgi_params;
+              }
+          }
+        dest: /etc/nginx/sites-available/default
+
+    - name: Ensure default site is enabled via symlink
+      file:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+
+    - name: Ensure Zabbix services, PHP-FPM and Nginx are restarted
       systemd:
         name: "{{ item }}"
-        state: started
+        state: restarted
         enabled: yes
-      loop: [mariadb, nginx, zabbix-server]
-    - name: Change Nginx default port from 80 to 8080 for Zabbix Web
-      lineinfile:
-        path: /etc/nginx/sites-available/default
-        regexp: 'listen 80 default_server;'
-        line: 'listen 8080 default_server;'
-
-    - name: Change Nginx default IPv6 port from 80 to 8080 for Zabbix Web
-      lineinfile:
-        path: /etc/nginx/sites-available/default
-        regexp: 'listen \[::\]:80 default_server;'
-        line: 'listen [::]:8080 default_server;'
-
+      loop: [mariadb, php8.1-fpm, nginx, zabbix-server]
+      
     - name: Restart Nginx to apply port 8080
       systemd:
         name: nginx

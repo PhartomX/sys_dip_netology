@@ -24,8 +24,35 @@ terraform apply
 ansible-playbook -i host.ini site.yml
 ```
 
-Теперь можем проверять работу сервисов.
+`Сайт`
 
-В частности работу баллансировщика можно проверить обновляя сайт работает по ссылке: http://158.160.151.128/
+Cсылка на сайт: http://158.160.151.128/
 
-Файлы для terraform и ansible лежат в директори:  [terraform](https://github.com/PhartomX/sys_dip_netology/tree/main/terraform)
+Работу баллансировщика можно проверить обновляя сайт.
+
+`Мониторинг`
+
+Добавляем все созданные ВМ на Zabbix-сервер:
+
+![img3](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img3.png)
+
+Создаём дашборд для мониторинга ресурсов:
+
+![img4](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img4.png)
+
+Просмотр возможен под пользователем `guest` по ссылке http://89.169.136.113:8080/
+
+`Логи`
+
+Подключаемся по ссылке http://89.169.130.105:5601/ , создаём 'Index patterns' в 'Kibana', переходим в 'Discover' и видим собранные логи.
+Для удобства отфильтровал логи и сохранил применённые фильтры под именем `SYS_DIP_LOG`:
+
+![img5](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img5.png)
+
+
+`Сеть`
+
+Настройку сети можно посмотреть в файлах terraform.
+
+Файлы для terraform и ansible лежат в директори:
+[terraform](https://github.com/PhartomX/sys_dip_netology/tree/main/terraform)

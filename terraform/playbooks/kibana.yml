@@ -24,7 +24,7 @@
         content: |
           server.host: "0.0.0.0"
           server.port: 5601
-          elasticsearch.hosts: ["http://ru-central1.internal"]
+          elasticsearch.hosts: ["http://elasticsearch.ru-central1.internal:9200"]
         dest: /etc/kibana/kibana.yml
 
     - name: Start and enable Kibana service
