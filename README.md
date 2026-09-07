@@ -56,3 +56,10 @@ Cсылка на сайт: http://158.160.152.148/
 
 Файлы для terraform и ansible лежат в директории:
 [terraform](https://github.com/PhartomX/sys_dip_netology/tree/main/terraform)
+
+
+### `Резервное копирование`
+
+Настроен автоматический ежедневный бэкап дисков:
+
+![img6](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img6.png)
