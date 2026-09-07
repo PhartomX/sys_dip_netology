@@ -63,3 +63,7 @@ Cсылка на сайт: http://158.160.152.148/
 Настроен автоматический ежедневный бэкап дисков:
 
 ![img6](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img6.png)
+
+Создано расписание на создание и хранение бэкапов:
+
+![img7](https://github.com/PhartomX/sys_dip_netology/blob/main/img/img7.png)
